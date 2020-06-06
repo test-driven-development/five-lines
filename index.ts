@@ -262,9 +262,6 @@ class Map {
     this.map[y + 1][x] = tile;
     this.map[y][x] = new Air();
   }
-  setTile(x: number, y: number, tile: Tile) {
-    this.map[y][x] = tile;
-  }
   movePlayer(x: number, y: number, newx: number, newy: number) {
     this.map[y][x] = new Air();
     this.map[newy][newx] = new PlayerTile();
