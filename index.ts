@@ -80,10 +80,8 @@ class PlayerTile implements Tile {
 
 class Stone implements Tile {
   private fallStrategy: FallStrategy;
-  private pushStrategy: PushStrategy;
   constructor(falling: boolean) {
     this.fallStrategy = new FallStrategy(falling);
-    this.pushStrategy = new PushStrategy();
   }
   isAir() { return false; }
   isLock1() { return false; }
@@ -93,7 +91,7 @@ class Stone implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(player: Player, dx: number) {
-    this.pushStrategy.moveHorizontal(player, this, dx);
+    player.pushHorizontal(this, dx);
   }
   moveVertical(player: Player, dy: number) { }
   update(x: number, y: number) {
@@ -103,10 +101,8 @@ class Stone implements Tile {
 
 class Box implements Tile {
   private fallStrategy: FallStrategy;
-  private pushStrategy: PushStrategy;
   constructor(falling: boolean) {
     this.fallStrategy = new FallStrategy(falling);
-    this.pushStrategy = new PushStrategy();
   }
   isAir() { return false; }
   isLock1() { return false; }
@@ -116,7 +112,7 @@ class Box implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(player: Player, dx: number) {
-    this.pushStrategy.moveHorizontal(player, this, dx);
+    player.pushHorizontal(this, dx);
   }
   moveVertical(player: Player, dy: number) { }
   update(x: number, y: number) {
@@ -170,12 +166,6 @@ class FallStrategy {
       map[y + 1][x] = tile;
       map[y][x] = new Air();
     }
-  }
-}
-
-class PushStrategy {
-  moveHorizontal(player: Player, tile: Tile, dx: number) {
-    player.pushHorizontal(tile, dx);
   }
 }
 
