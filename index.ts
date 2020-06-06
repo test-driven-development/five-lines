@@ -285,9 +285,6 @@ function transformTile(tile: RawTile) {
     default: assertExhausted(tile);
   }
 }
-function transformMap(map: Map) {
-  map.transform();
-}
 
 let inputs: Input[] = [];
 
@@ -364,7 +361,7 @@ function gameLoop(map: Map) {
 }
 
 window.onload = () => {
-  transformMap(map);
+  map.transform();
   gameLoop(map);
 }
 
