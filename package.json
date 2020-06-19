@@ -1,0 +1,52 @@
+{
+  "name": "five-lines",
+  "version": "1.0.0",
+  "description": "refactoring exercises",
+  "main": "index.js",
+  "repository": "git@github.com:test-driven-development/five-lines.git",
+  "author": "wil pannell <wil.pannell@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf dist",
+    "compile": "tsc --noEmit --watch",
+    "run": "parcel index.html",
+    "format": "prettier --write \"src/**/*.{js,ts,jsx,html}\"",
+    "lint": "esw \"src/**/*.{js,ts,jsx}\" --quiet",
+    "lint:watch": "npm run lint -- --watch",
+    "start": "npm-run-all --parallel clean compile run"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
+    "@typescript-eslint/parser": "^3.3.0",
+    "@types/node": "latest",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "eslint-watch": "^6.0.1",
+    "npm-run-all": "^4.1.5",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.4.3",
+    "prettier": "^1.18.2",
+    "rimraf": "^2.6.2",
+    "typescript": "^3.9.5"
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "printWidth": 80,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "useTabs": false
+  },
+  "staticFiles": {
+    "staticPath": "assets",
+    "watcherGlob": "**"
+  }
+}
