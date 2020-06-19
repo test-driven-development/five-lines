@@ -13,7 +13,13 @@
     "format": "prettier --write \"src/**/*.{js,ts,jsx,html}\"",
     "lint": "esw \"src/**/*.{js,ts,jsx}\" --quiet",
     "lint:watch": "npm run lint -- --watch",
-    "start": "npm-run-all --parallel clean compile run"
+    "start": "npm-run-all --parallel clean compile run",
+    "tdd": "npm-run-all --parallel lint:watch test:watch",
+    "test": "jest --forceExit --notify --detectOpenHandles src",
+    "test:coverage": "npm test -- --coverage",
+    "test:watch": "npm test -- --watchAll",
+    "validate": "npm run format && npm run lint && npm run test:coverage"
+
   },
   "devDependencies": {
     "@types/jest": "latest",
