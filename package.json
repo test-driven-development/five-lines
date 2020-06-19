@@ -44,6 +44,49 @@
     "ts-node": "latest",
     "typescript": "^3.9.5"
   },
+  "jest": {
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "lcov"
+    ],
+    "globals": {
+      "ts-jest": {
+        "babelConfig": false,
+        "tsConfig": "<rootDir>tsconfig.json"
+      }
+    },
+    "forceCoverageMatch": [
+      "<rootDir>/src/**/*.spec.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "modulePaths": [
+      "<rootDir>/src/"
+    ],
+    "notify": true,
+    "notifyMode": "always",
+    "roots": [
+      "src"
+    ],
+    "setupFiles": [
+      "<rootDir>/setup-jest.ts"
+    ],
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "<rootDir>/src/**/+(*.)+(spec|test).+(ts)"
+    ],
+    "testURL": "http://localstorage:8080",
+    "transform": {
+      "^.+\\.(ts)x?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-test))",
+      "node_modules/(?!(node_modules))"
+    ]
+  },
   "prettier": {
     "bracketSpacing": false,
     "printWidth": 80,
