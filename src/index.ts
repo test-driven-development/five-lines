@@ -26,7 +26,7 @@ enum Input {
 
 let playerx = 1
 let playery = 1
-let map: Tile[][] = [
+const map: Tile[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2],
   [2, 3, 0, 1, 1, 2, 0, 2],
   [2, 4, 2, 6, 1, 2, 0, 2],
@@ -35,7 +35,7 @@ let map: Tile[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2]
 ]
 
-let inputs: Input[] = []
+const inputs: Input[] = []
 
 function remove(tile: Tile) {
   for (let y = 0; y < map.length; y++) {
@@ -155,12 +155,12 @@ function draw() {
 }
 
 function gameLoop() {
-  let before = Date.now()
+  const before = Date.now()
   update()
   draw()
-  let after = Date.now()
-  let frameTime = after - before
-  let sleep = SLEEP - frameTime
+  const after = Date.now()
+  const frameTime = after - before
+  const sleep = SLEEP - frameTime
   setTimeout(gameLoop, sleep)
 }
 
