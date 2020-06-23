@@ -17,13 +17,6 @@ enum Tile {
   LOCK2
 }
 
-enum Input {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
-}
-
 let player1 = 1
 let player2 = 1
 
@@ -35,6 +28,69 @@ const map: Tile[][] = [
   [2, 4, 1, 1, 1, 9, 0, 2],
   [2, 2, 2, 2, 2, 2, 2, 2]
 ]
+
+function remove(tile: Tile) {
+  for (let y = 0; y < map.length; y++) {
+    for (let x = 0; x < map[y].length; x++) {
+      if (map[y][x] === tile) {
+        map[y][x] = Tile.AIR
+      }
+    }
+  }
+}
+
+function moveToTile(x: number, y: number) {
+  map[player2][player1] = Tile.AIR
+  map[y][x] = Tile.PLAYER
+  player1 = x
+  player2 = y
+}
+
+function moveHorizontal(Δx: number) {
+  if (
+    map[player2][player1 + Δx] === Tile.FLUX ||
+    map[player2][player1 + Δx] === Tile.AIR
+  ) {
+    moveToTile(player1 + Δx, player2)
+  } else if (
+    (map[player2][player1 + Δx] === Tile.STONE ||
+      map[player2][player1 + Δx] === Tile.BOX) &&
+    map[player2][player1 + Δx + Δx] === Tile.AIR &&
+    map[player2 + 1][player1 + Δx] !== Tile.AIR
+  ) {
+    map[player2][player1 + Δx + Δx] = map[player2][player1 + Δx]
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY1) {
+    remove(Tile.LOCK1)
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY2) {
+    remove(Tile.LOCK2)
+    moveToTile(player1 + Δx, player2)
+  }
+}
+
+function moveVertical(Δy: number) {
+  if (
+    map[player2 + Δy][player1] === Tile.FLUX ||
+    map[player2 + Δy][player1] === Tile.AIR
+  ) {
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY1) {
+    remove(Tile.LOCK1)
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY2) {
+    remove(Tile.LOCK2)
+    moveToTile(player1, player2 + Δy)
+  }
+}
+
+enum Input {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+}
+const inputs: Input[] = []
 
 interface Input2 {
   isUp(): boolean
@@ -105,65 +161,12 @@ class Down implements Input2 {
 
 const inputs: Input[] = []
 
-function remove(tile: Tile) {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x] === tile) {
-        map[y][x] = Tile.AIR
-      }
-    }
-  }
-}
-
-function moveToTile(x: number, y: number) {
-  map[player2][player1] = Tile.AIR
-  map[y][x] = Tile.PLAYER
-  player1 = x
-  player2 = y
-}
-
-function moveHorizontal(Δx: number) {
-  if (
-    map[player2][player1 + Δx] === Tile.FLUX ||
-    map[player2][player1 + Δx] === Tile.AIR
-  ) {
-    moveToTile(player1 + Δx, player2)
-  } else if (
-    (map[player2][player1 + Δx] === Tile.STONE ||
-      map[player2][player1 + Δx] === Tile.BOX) &&
-    map[player2][player1 + Δx + Δx] === Tile.AIR &&
-    map[player2 + 1][player1 + Δx] !== Tile.AIR
-  ) {
-    map[player2][player1 + Δx + Δx] = map[player2][player1 + Δx]
-    moveToTile(player1 + Δx, player2)
-  } else if (map[player2][player1 + Δx] === Tile.KEY1) {
-    remove(Tile.LOCK1)
-    moveToTile(player1 + Δx, player2)
-  } else if (map[player2][player1 + Δx] === Tile.KEY2) {
-    remove(Tile.LOCK2)
-    moveToTile(player1 + Δx, player2)
-  }
-}
-
-function moveVertical(Δy: number) {
-  if (
-    map[player2 + Δy][player1] === Tile.FLUX ||
-    map[player2 + Δy][player1] === Tile.AIR
-  ) {
-    moveToTile(player1, player2 + Δy)
-  } else if (map[player2 + Δy][player1] === Tile.KEY1) {
-    remove(Tile.LOCK1)
-    moveToTile(player1, player2 + Δy)
-  } else if (map[player2 + Δy][player1] === Tile.KEY2) {
-    remove(Tile.LOCK2)
-    moveToTile(player1, player2 + Δy)
-  }
-}
+const inputs2: Input2[] = []
 
 function update() {
   handleInputs()
-  updateMap()
 
+  updateMap()
   function updateMap() {
     for (let y = map.length - 1; y >= 0; y--) {
       for (let x = 0; x < map[y].length; x++) {
@@ -171,7 +174,6 @@ function update() {
       }
     }
   }
-
   function updateTile(y: number, x: number) {
     if (
       (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE) &&
@@ -200,48 +202,35 @@ function update() {
   }
 
   function handleInput(input: Input) {
-    function isLeft() {
-      return input === Input.LEFT
-    }
-
-    function isRight() {
-      return input === Input.RIGHT
-    }
-
-    function isUp() {
-      return input === Input.UP
-    }
-
-    function isDown() {
-      return input === Input.DOWN
-    }
-
-    if (isLeft()) {
-      moveHorizontal(-1)
-    } else if (isRight()) {
-      moveHorizontal(1)
-    } else if (isUp()) {
-      moveVertical(-1)
-    } else if (isDown()) {
-      moveVertical(1)
-    }
+    if (input === Input.LEFT) moveHorizontal(-1)
+    else if (input === Input.RIGHT) moveHorizontal(1)
+    else if (input === Input.UP) moveVertical(-1)
+    else if (input === Input.DOWN) moveVertical(1)
   }
+
+  window.addEventListener('keydown', e => {
+    if (shouldGoLeft(e)) inputs.push(Input.LEFT)
+    else if (shouldGoUp(e)) inputs.push(Input.UP)
+    else if (shouldGoRight(e)) inputs.push(Input.RIGHT)
+    else if (shouldGoDown(e)) inputs.push(Input.DOWN)
+  })
 
   const LEFT_KEY = 'ArrowLeft'
   const UP_KEY = 'ArrowUp'
   const RIGHT_KEY = 'ArrowRight'
   const DOWN_KEY = 'ArrowDown'
-  window.addEventListener('keydown', e => {
-    if (e.code === LEFT_KEY || e.key === 'a') {
-      inputs.push(Input.LEFT)
-    } else if (e.code === UP_KEY || e.key === 'w') {
-      inputs.push(Input.UP)
-    } else if (e.code === RIGHT_KEY || e.key === 'd') {
-      inputs.push(Input.RIGHT)
-    } else if (e.code === DOWN_KEY || e.key === 's') {
-      inputs.push(Input.DOWN)
-    }
-  })
+  function shouldGoLeft(e: KeyboardEvent) {
+    return e.code === LEFT_KEY || e.key === 'a'
+  }
+  function shouldGoUp(e: KeyboardEvent) {
+    return e.code === UP_KEY || e.key === 'w'
+  }
+  function shouldGoRight(e: KeyboardEvent) {
+    return e.code === RIGHT_KEY || e.key === 'd'
+  }
+  function shouldGoDown(e: KeyboardEvent) {
+    return e.code === DOWN_KEY || e.key === 's'
+  }
 }
 
 function draw() {
@@ -291,7 +280,6 @@ function draw() {
     g.fillRect(player1 * TILE_SIZE, player2 * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 }
-
 function gameLoop() {
   const before = Date.now()
   update()
@@ -301,7 +289,6 @@ function gameLoop() {
   const sleep = SLEEP - frameTime
   setTimeout(gameLoop, sleep)
 }
-
 window.onload = () => {
   gameLoop()
 }
