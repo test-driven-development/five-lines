@@ -164,30 +164,11 @@ function update() {
   handleInputs()
   updateMap()
 
-  function handleInputs() {
-    while (inputs.length > 0) {
-      const current = inputs.pop()
-      handleInput(current)
-    }
-  }
-
   function updateMap() {
     for (let y = map.length - 1; y >= 0; y--) {
       for (let x = 0; x < map[y].length; x++) {
         updateTile(y, x)
       }
-    }
-  }
-
-  function handleInput(input: Input) {
-    if (input === Input.LEFT) {
-      moveHorizontal(-1)
-    } else if (input === Input.RIGHT) {
-      moveHorizontal(1)
-    } else if (input === Input.UP) {
-      moveVertical(-1)
-    } else if (input === Input.DOWN) {
-      moveVertical(1)
     }
   }
 
@@ -210,6 +191,57 @@ function update() {
       map[y][x] = Tile.BOX
     }
   }
+
+  function handleInputs() {
+    while (inputs.length > 0) {
+      const current = inputs.pop()
+      handleInput(current)
+    }
+  }
+
+  function handleInput(input: Input) {
+    function isLeft() {
+      return input === Input.LEFT
+    }
+
+    function isRight() {
+      return input === Input.RIGHT
+    }
+
+    function isUp() {
+      return input === Input.UP
+    }
+
+    function isDown() {
+      return input === Input.DOWN
+    }
+
+    if (isLeft()) {
+      moveHorizontal(-1)
+    } else if (isRight()) {
+      moveHorizontal(1)
+    } else if (isUp()) {
+      moveVertical(-1)
+    } else if (isDown()) {
+      moveVertical(1)
+    }
+  }
+
+  const LEFT_KEY = 37
+  const UP_KEY = 38
+  const RIGHT_KEY = 39
+  const DOWN_KEY = 40
+  window.addEventListener('keydown', e => {
+    if (e.keyCode === LEFT_KEY || e.key === 'a') {
+      inputs.push(Input.LEFT)
+    } else if (e.keyCode === UP_KEY || e.key === 'w') {
+      inputs.push(Input.UP)
+    } else if (e.keyCode === RIGHT_KEY || e.key === 'd') {
+      inputs.push(Input.RIGHT)
+    } else if (e.keyCode === DOWN_KEY || e.key === 's') {
+      inputs.push(Input.DOWN)
+    }
+  })
 }
 
 function draw() {
@@ -273,19 +305,3 @@ function gameLoop() {
 window.onload = () => {
   gameLoop()
 }
-
-const LEFT_KEY = 37
-const UP_KEY = 38
-const RIGHT_KEY = 39
-const DOWN_KEY = 40
-window.addEventListener('keydown', e => {
-  if (e.keyCode === LEFT_KEY || e.key === 'a') {
-    inputs.push(Input.LEFT)
-  } else if (e.keyCode === UP_KEY || e.key === 'w') {
-    inputs.push(Input.UP)
-  } else if (e.keyCode === RIGHT_KEY || e.key === 'd') {
-    inputs.push(Input.RIGHT)
-  } else if (e.keyCode === DOWN_KEY || e.key === 's') {
-    inputs.push(Input.DOWN)
-  }
-})
