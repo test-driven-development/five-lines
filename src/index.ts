@@ -227,18 +227,18 @@ function update() {
     }
   }
 
-  const LEFT_KEY = 37
-  const UP_KEY = 38
-  const RIGHT_KEY = 39
-  const DOWN_KEY = 40
+  const LEFT_KEY = 'ArrowLeft'
+  const UP_KEY = 'ArrowUp'
+  const RIGHT_KEY = 'ArrowRight'
+  const DOWN_KEY = 'ArrowDown'
   window.addEventListener('keydown', e => {
-    if (e.keyCode === LEFT_KEY || e.key === 'a') {
+    if (e.code === LEFT_KEY || e.key === 'a') {
       inputs.push(Input.LEFT)
-    } else if (e.keyCode === UP_KEY || e.key === 'w') {
+    } else if (e.code === UP_KEY || e.key === 'w') {
       inputs.push(Input.UP)
-    } else if (e.keyCode === RIGHT_KEY || e.key === 'd') {
+    } else if (e.code === RIGHT_KEY || e.key === 'd') {
       inputs.push(Input.RIGHT)
-    } else if (e.keyCode === DOWN_KEY || e.key === 's') {
+    } else if (e.code === DOWN_KEY || e.key === 's') {
       inputs.push(Input.DOWN)
     }
   })
