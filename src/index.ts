@@ -24,8 +24,9 @@ enum Input {
   RIGHT
 }
 
-let playerx = 1
-let playery = 1
+let player1 = 1
+let player2 = 1
+
 const map: Tile[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2],
   [2, 3, 0, 1, 1, 2, 0, 2],
@@ -47,48 +48,48 @@ function remove(tile: Tile) {
   }
 }
 
-function moveToTile(newx: number, newy: number) {
-  map[playery][playerx] = Tile.AIR
-  map[newy][newx] = Tile.PLAYER
-  playerx = newx
-  playery = newy
+function moveToTile(x: number, y: number) {
+  map[player2][player1] = Tile.AIR
+  map[y][x] = Tile.PLAYER
+  player1 = x
+  player2 = y
 }
 
-function moveHorizontal(dx: number) {
+function moveHorizontal(Δx: number) {
   if (
-    map[playery][playerx + dx] === Tile.FLUX ||
-    map[playery][playerx + dx] === Tile.AIR
+    map[player2][player1 + Δx] === Tile.FLUX ||
+    map[player2][player1 + Δx] === Tile.AIR
   ) {
-    moveToTile(playerx + dx, playery)
+    moveToTile(player1 + Δx, player2)
   } else if (
-    (map[playery][playerx + dx] === Tile.STONE ||
-      map[playery][playerx + dx] === Tile.BOX) &&
-    map[playery][playerx + dx + dx] === Tile.AIR &&
-    map[playery + 1][playerx + dx] !== Tile.AIR
+    (map[player2][player1 + Δx] === Tile.STONE ||
+      map[player2][player1 + Δx] === Tile.BOX) &&
+    map[player2][player1 + Δx + Δx] === Tile.AIR &&
+    map[player2 + 1][player1 + Δx] !== Tile.AIR
   ) {
-    map[playery][playerx + dx + dx] = map[playery][playerx + dx]
-    moveToTile(playerx + dx, playery)
-  } else if (map[playery][playerx + dx] === Tile.KEY1) {
+    map[player2][player1 + Δx + Δx] = map[player2][player1 + Δx]
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY1) {
     remove(Tile.LOCK1)
-    moveToTile(playerx + dx, playery)
-  } else if (map[playery][playerx + dx] === Tile.KEY2) {
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY2) {
     remove(Tile.LOCK2)
-    moveToTile(playerx + dx, playery)
+    moveToTile(player1 + Δx, player2)
   }
 }
 
 function moveVertical(dy: number) {
   if (
-    map[playery + dy][playerx] === Tile.FLUX ||
-    map[playery + dy][playerx] === Tile.AIR
+    map[player2 + dy][player1] === Tile.FLUX ||
+    map[player2 + dy][player1] === Tile.AIR
   ) {
-    moveToTile(playerx, playery + dy)
-  } else if (map[playery + dy][playerx] === Tile.KEY1) {
+    moveToTile(player1, player2 + dy)
+  } else if (map[player2 + dy][player1] === Tile.KEY1) {
     remove(Tile.LOCK1)
-    moveToTile(playerx, playery + dy)
-  } else if (map[playery + dy][playerx] === Tile.KEY2) {
+    moveToTile(player1, player2 + dy)
+  } else if (map[player2 + dy][player1] === Tile.KEY2) {
     remove(Tile.LOCK2)
-    moveToTile(playerx, playery + dy)
+    moveToTile(player1, player2 + dy)
   }
 }
 
@@ -157,6 +158,7 @@ function draw() {
     g.clearRect(0, 0, canvas.width, canvas.height)
     return g
   }
+
   function drawMap(g: CanvasRenderingContext2D) {
     // Draw map
     for (let y = 0; y < map.length; y++) {
@@ -184,9 +186,10 @@ function draw() {
       }
     }
   }
+
   function drawPlayer(g: CanvasRenderingContext2D) {
     g.fillStyle = '#ff0000'
-    g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    g.fillRect(player1 * TILE_SIZE, player2 * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 }
 
@@ -209,8 +212,13 @@ const UP_KEY = 38
 const RIGHT_KEY = 39
 const DOWN_KEY = 40
 window.addEventListener('keydown', e => {
-  if (e.keyCode === LEFT_KEY || e.key === 'a') inputs.push(Input.LEFT)
-  else if (e.keyCode === UP_KEY || e.key === 'w') inputs.push(Input.UP)
-  else if (e.keyCode === RIGHT_KEY || e.key === 'd') inputs.push(Input.RIGHT)
-  else if (e.keyCode === DOWN_KEY || e.key === 's') inputs.push(Input.DOWN)
+  if (e.keyCode === LEFT_KEY || e.key === 'a') {
+    inputs.push(Input.LEFT)
+  } else if (e.keyCode === UP_KEY || e.key === 'w') {
+    inputs.push(Input.UP)
+  } else if (e.keyCode === RIGHT_KEY || e.key === 'd') {
+    inputs.push(Input.RIGHT)
+  } else if (e.keyCode === DOWN_KEY || e.key === 's') {
+    inputs.push(Input.DOWN)
+  }
 })
