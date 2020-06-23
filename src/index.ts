@@ -145,18 +145,18 @@ function moveHorizontal(Δx: number) {
   }
 }
 
-function moveVertical(dy: number) {
+function moveVertical(Δy: number) {
   if (
-    map[player2 + dy][player1] === Tile.FLUX ||
-    map[player2 + dy][player1] === Tile.AIR
+    map[player2 + Δy][player1] === Tile.FLUX ||
+    map[player2 + Δy][player1] === Tile.AIR
   ) {
-    moveToTile(player1, player2 + dy)
-  } else if (map[player2 + dy][player1] === Tile.KEY1) {
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY1) {
     remove(Tile.LOCK1)
-    moveToTile(player1, player2 + dy)
-  } else if (map[player2 + dy][player1] === Tile.KEY2) {
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY2) {
     remove(Tile.LOCK2)
-    moveToTile(player1, player2 + dy)
+    moveToTile(player1, player2 + Δy)
   }
 }
 
