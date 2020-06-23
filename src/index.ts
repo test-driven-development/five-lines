@@ -93,65 +93,101 @@ function moveVertical(dy: number) {
 }
 
 function update() {
-  while (inputs.length > 0) {
-    let current = inputs.pop()
-    if (current === Input.LEFT) moveHorizontal(-1)
-    else if (current === Input.RIGHT) moveHorizontal(1)
-    else if (current === Input.UP) moveVertical(-1)
-    else if (current === Input.DOWN) moveVertical(1)
+  handleInputs()
+  updateMap()
+
+  function handleInputs() {
+    while (inputs.length > 0) {
+      const current = inputs.pop()
+      handleInput(current)
+    }
   }
 
-  for (let y = map.length - 1; y >= 0; y--) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (
-        (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE) &&
-        map[y + 1][x] === Tile.AIR
-      ) {
-        map[y + 1][x] = Tile.FALLING_STONE
-        map[y][x] = Tile.AIR
-      } else if (
-        (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX) &&
-        map[y + 1][x] === Tile.AIR
-      ) {
-        map[y + 1][x] = Tile.FALLING_BOX
-        map[y][x] = Tile.AIR
-      } else if (map[y][x] === Tile.FALLING_STONE) {
-        map[y][x] = Tile.STONE
-      } else if (map[y][x] === Tile.FALLING_BOX) {
-        map[y][x] = Tile.BOX
+  function updateMap() {
+    for (let y = map.length - 1; y >= 0; y--) {
+      for (let x = 0; x < map[y].length; x++) {
+        updateTile(y, x)
       }
+    }
+  }
+
+  function handleInput(input: Input) {
+    if (input === Input.LEFT) {
+      moveHorizontal(-1)
+    } else if (input === Input.RIGHT) {
+      moveHorizontal(1)
+    } else if (input === Input.UP) {
+      moveVertical(-1)
+    } else if (input === Input.DOWN) {
+      moveVertical(1)
+    }
+  }
+
+  function updateTile(y: number, x: number) {
+    if (
+      (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE) &&
+      map[y + 1][x] === Tile.AIR
+    ) {
+      map[y + 1][x] = Tile.FALLING_STONE
+      map[y][x] = Tile.AIR
+    } else if (
+      (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX) &&
+      map[y + 1][x] === Tile.AIR
+    ) {
+      map[y + 1][x] = Tile.FALLING_BOX
+      map[y][x] = Tile.AIR
+    } else if (map[y][x] === Tile.FALLING_STONE) {
+      map[y][x] = Tile.STONE
+    } else if (map[y][x] === Tile.FALLING_BOX) {
+      map[y][x] = Tile.BOX
     }
   }
 }
 
 function draw() {
-  let canvas = document.getElementById('GameCanvas') as HTMLCanvasElement
-  let g = canvas.getContext('2d')
+  const g = createGraphics()
 
-  g.clearRect(0, 0, canvas.width, canvas.height)
+  drawMap(g)
+  drawPlayer(g)
 
-  // Draw map
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x] === Tile.FLUX) g.fillStyle = '#ccffcc'
-      else if (map[y][x] === Tile.UNBREAKABLE) g.fillStyle = '#999999'
-      else if (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE)
-        g.fillStyle = '#0000cc'
-      else if (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX)
-        g.fillStyle = '#8b4513'
-      else if (map[y][x] === Tile.KEY1 || map[y][x] === Tile.LOCK1)
-        g.fillStyle = '#ffcc00'
-      else if (map[y][x] === Tile.KEY2 || map[y][x] === Tile.LOCK2)
-        g.fillStyle = '#00ccff'
+  function createGraphics() {
+    const canvas = document.getElementById('GameCanvas') as HTMLCanvasElement
+    const g = canvas.getContext('2d')
 
-      if (map[y][x] !== Tile.AIR)
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    g.clearRect(0, 0, canvas.width, canvas.height)
+    return g
+  }
+  function drawMap(g: CanvasRenderingContext2D) {
+    // Draw map
+    for (let y = 0; y < map.length; y++) {
+      for (let x = 0; x < map[y].length; x++) {
+        if (map[y][x] === Tile.FLUX) {
+          g.fillStyle = '#ccffcc'
+        } else if (map[y][x] === Tile.UNBREAKABLE) {
+          g.fillStyle = '#999999'
+        } else if (
+          map[y][x] === Tile.STONE ||
+          map[y][x] === Tile.FALLING_STONE
+        ) {
+          g.fillStyle = '#0000cc'
+        } else if (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX) {
+          g.fillStyle = '#8b4513'
+        } else if (map[y][x] === Tile.KEY1 || map[y][x] === Tile.LOCK1) {
+          g.fillStyle = '#ffcc00'
+        } else if (map[y][x] === Tile.KEY2 || map[y][x] === Tile.LOCK2) {
+          g.fillStyle = '#00ccff'
+        }
+
+        if (map[y][x] !== Tile.AIR) {
+          g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+        }
+      }
     }
   }
-
-  // Draw player
-  g.fillStyle = '#ff0000'
-  g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  function drawPlayer(g: CanvasRenderingContext2D) {
+    g.fillStyle = '#ff0000'
+    g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 function gameLoop() {
