@@ -4,6 +4,15 @@ const TILE_SIZE = 30
 const FPS = 30
 const SLEEP = 1000 / FPS
 
+const map: Tile[][] = [
+  [2, 2, 2, 2, 2, 2, 2, 2],
+  [2, 3, 0, 1, 1, 2, 0, 2],
+  [2, 4, 2, 6, 1, 2, 0, 2],
+  [2, 8, 4, 1, 1, 2, 0, 2],
+  [2, 4, 1, 1, 1, 9, 0, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2]
+]
+
 enum Tile {
   AIR,
   FLUX,
@@ -19,73 +28,6 @@ enum Tile {
   LOCK2
 }
 
-let player1 = 1
-let player2 = 1
-
-const map: Tile[][] = [
-  [2, 2, 2, 2, 2, 2, 2, 2],
-  [2, 3, 0, 1, 1, 2, 0, 2],
-  [2, 4, 2, 6, 1, 2, 0, 2],
-  [2, 8, 4, 1, 1, 2, 0, 2],
-  [2, 4, 1, 1, 1, 9, 0, 2],
-  [2, 2, 2, 2, 2, 2, 2, 2]
-]
-
-function remove(tile: Tile) {
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x] === tile) {
-        map[y][x] = Tile.AIR
-      }
-    }
-  }
-}
-
-function moveToTile(x: number, y: number) {
-  map[player2][player1] = Tile.AIR
-  map[y][x] = Tile.PLAYER
-  player1 = x
-  player2 = y
-}
-
-function moveHorizontal(Δx: number): void {
-  if (
-    map[player2][player1 + Δx] === Tile.FLUX ||
-    map[player2][player1 + Δx] === Tile.AIR
-  ) {
-    moveToTile(player1 + Δx, player2)
-  } else if (
-    (map[player2][player1 + Δx] === Tile.STONE ||
-      map[player2][player1 + Δx] === Tile.BOX) &&
-    map[player2][player1 + Δx + Δx] === Tile.AIR &&
-    map[player2 + 1][player1 + Δx] !== Tile.AIR
-  ) {
-    map[player2][player1 + Δx + Δx] = map[player2][player1 + Δx]
-    moveToTile(player1 + Δx, player2)
-  } else if (map[player2][player1 + Δx] === Tile.KEY1) {
-    remove(Tile.LOCK1)
-    moveToTile(player1 + Δx, player2)
-  } else if (map[player2][player1 + Δx] === Tile.KEY2) {
-    remove(Tile.LOCK2)
-    moveToTile(player1 + Δx, player2)
-  }
-}
-
-function moveVertical(Δy: number): void {
-  if (
-    map[player2 + Δy][player1] === Tile.FLUX ||
-    map[player2 + Δy][player1] === Tile.AIR
-  ) {
-    moveToTile(player1, player2 + Δy)
-  } else if (map[player2 + Δy][player1] === Tile.KEY1) {
-    remove(Tile.LOCK1)
-    moveToTile(player1, player2 + Δy)
-  } else if (map[player2 + Δy][player1] === Tile.KEY2) {
-    remove(Tile.LOCK2)
-    moveToTile(player1, player2 + Δy)
-  }
-}
-
 enum Input {
   UP,
   DOWN,
@@ -94,12 +36,16 @@ enum Input {
 }
 const inputs: Input[] = []
 
+let player1 = 1
+let player2 = 1
+
 interface Input2 {
   isUp(): boolean
   isDown(): boolean
   isLeft(): boolean
   isRight(): boolean
 }
+
 class Right implements Input2 {
   isRight() {
     return true
@@ -158,37 +104,64 @@ class Down implements Input2 {
 }
 const inputs2: Input2[] = []
 
-function update() {
-  handleInputs(inputs, moveHorizontal, moveVertical)
-
-  updateMap()
-  function updateMap() {
-    for (let y = map.length - 1; y >= 0; y--) {
-      for (let x = 0; x < map[y].length; x++) {
-        updateTile(y, x)
+function remove(tile: Tile) {
+  for (let y = 0; y < map.length; y++) {
+    for (let x = 0; x < map[y].length; x++) {
+      if (map[y][x] === tile) {
+        map[y][x] = Tile.AIR
       }
     }
   }
-  function updateTile(y: number, x: number) {
-    if (
-      (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE) &&
-      map[y + 1][x] === Tile.AIR
-    ) {
-      map[y + 1][x] = Tile.FALLING_STONE
-      map[y][x] = Tile.AIR
-    } else if (
-      (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX) &&
-      map[y + 1][x] === Tile.AIR
-    ) {
-      map[y + 1][x] = Tile.FALLING_BOX
-      map[y][x] = Tile.AIR
-    } else if (map[y][x] === Tile.FALLING_STONE) {
-      map[y][x] = Tile.STONE
-    } else if (map[y][x] === Tile.FALLING_BOX) {
-      map[y][x] = Tile.BOX
-    }
-  }
+}
 
+function moveToTile(x: number, y: number) {
+  map[player2][player1] = Tile.AIR
+  map[y][x] = Tile.PLAYER
+  player1 = x
+  player2 = y
+}
+
+function moveHorizontal(Δx: number): void {
+  if (
+    map[player2][player1 + Δx] === Tile.FLUX ||
+    map[player2][player1 + Δx] === Tile.AIR
+  ) {
+    moveToTile(player1 + Δx, player2)
+  } else if (
+    (map[player2][player1 + Δx] === Tile.STONE ||
+      map[player2][player1 + Δx] === Tile.BOX) &&
+    map[player2][player1 + Δx + Δx] === Tile.AIR &&
+    map[player2 + 1][player1 + Δx] !== Tile.AIR
+  ) {
+    map[player2][player1 + Δx + Δx] = map[player2][player1 + Δx]
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY1) {
+    remove(Tile.LOCK1)
+    moveToTile(player1 + Δx, player2)
+  } else if (map[player2][player1 + Δx] === Tile.KEY2) {
+    remove(Tile.LOCK2)
+    moveToTile(player1 + Δx, player2)
+  }
+}
+
+function moveVertical(Δy: number): void {
+  if (
+    map[player2 + Δy][player1] === Tile.FLUX ||
+    map[player2 + Δy][player1] === Tile.AIR
+  ) {
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY1) {
+    remove(Tile.LOCK1)
+    moveToTile(player1, player2 + Δy)
+  } else if (map[player2 + Δy][player1] === Tile.KEY2) {
+    remove(Tile.LOCK2)
+    moveToTile(player1, player2 + Δy)
+  }
+}
+
+function update() {
+  handleInputs(inputs, moveHorizontal, moveVertical)
+  updateMap()
   window.addEventListener('keydown', move)
 }
 
@@ -212,6 +185,33 @@ function handleInput(
   else if (input === Input.RIGHT) moveHorizontal(1)
   else if (input === Input.UP) moveVertical(-1)
   else if (input === Input.DOWN) moveVertical(1)
+}
+
+function updateMap() {
+  for (let y = map.length - 1; y >= 0; y--) {
+    for (let x = 0; x < map[y].length; x++) {
+      updateTile(y, x)
+    }
+  }
+}
+function updateTile(y: number, x: number) {
+  if (
+    (map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE) &&
+    map[y + 1][x] === Tile.AIR
+  ) {
+    map[y + 1][x] = Tile.FALLING_STONE
+    map[y][x] = Tile.AIR
+  } else if (
+    (map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX) &&
+    map[y + 1][x] === Tile.AIR
+  ) {
+    map[y + 1][x] = Tile.FALLING_BOX
+    map[y][x] = Tile.AIR
+  } else if (map[y][x] === Tile.FALLING_STONE) {
+    map[y][x] = Tile.STONE
+  } else if (map[y][x] === Tile.FALLING_BOX) {
+    map[y][x] = Tile.BOX
+  }
 }
 
 function move(e: KeyboardEvent): void {
