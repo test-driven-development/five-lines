@@ -1,3 +1,5 @@
+import 'should'
+
 const TILE_SIZE = 30
 const FPS = 30
 const SLEEP = 1000 / FPS
@@ -46,7 +48,7 @@ function moveToTile(x: number, y: number) {
   player2 = y
 }
 
-function moveHorizontal(Δx: number) {
+function moveHorizontal(Δx: number): void {
   if (
     map[player2][player1 + Δx] === Tile.FLUX ||
     map[player2][player1 + Δx] === Tile.AIR
@@ -69,7 +71,7 @@ function moveHorizontal(Δx: number) {
   }
 }
 
-function moveVertical(Δy: number) {
+function moveVertical(Δy: number): void {
   if (
     map[player2 + Δy][player1] === Tile.FLUX ||
     map[player2 + Δy][player1] === Tile.AIR
@@ -98,7 +100,6 @@ interface Input2 {
   isLeft(): boolean
   isRight(): boolean
 }
-
 class Right implements Input2 {
   isRight() {
     return true
@@ -113,7 +114,6 @@ class Right implements Input2 {
     return false
   }
 }
-
 class Left implements Input2 {
   isRight() {
     return false
@@ -128,7 +128,6 @@ class Left implements Input2 {
     return false
   }
 }
-
 class Up implements Input2 {
   isRight() {
     return false
@@ -143,7 +142,6 @@ class Up implements Input2 {
     return false
   }
 }
-
 class Down implements Input2 {
   isRight() {
     return false
@@ -158,13 +156,10 @@ class Down implements Input2 {
     return true
   }
 }
-
-const inputs: Input[] = []
-
 const inputs2: Input2[] = []
 
 function update() {
-  handleInputs()
+  handleInputs(inputs, moveHorizontal, moveVertical)
 
   updateMap()
   function updateMap() {
@@ -194,43 +189,54 @@ function update() {
     }
   }
 
-  function handleInputs() {
-    while (inputs.length > 0) {
-      const current = inputs.pop()
-      handleInput(current)
-    }
-  }
+  window.addEventListener('keydown', move)
+}
 
-  function handleInput(input: Input) {
-    if (input === Input.LEFT) moveHorizontal(-1)
-    else if (input === Input.RIGHT) moveHorizontal(1)
-    else if (input === Input.UP) moveVertical(-1)
-    else if (input === Input.DOWN) moveVertical(1)
+function handleInputs(
+  inputs: Input[],
+  moveHorizontal: (Δx: number) => void,
+  moveVertical: (Δy: number) => void
+): void {
+  while (inputs.length > 0) {
+    const current = inputs.pop()
+    handleInput(current, moveHorizontal, moveVertical)
   }
+}
 
-  window.addEventListener('keydown', e => {
-    if (shouldGoLeft(e)) inputs.push(Input.LEFT)
-    else if (shouldGoUp(e)) inputs.push(Input.UP)
-    else if (shouldGoRight(e)) inputs.push(Input.RIGHT)
-    else if (shouldGoDown(e)) inputs.push(Input.DOWN)
-  })
+function handleInput(
+  input: Input,
+  moveHorizontal: (Δx: number) => void,
+  moveVertical: (Δy: number) => void
+) {
+  if (input === Input.LEFT) moveHorizontal(-1)
+  else if (input === Input.RIGHT) moveHorizontal(1)
+  else if (input === Input.UP) moveVertical(-1)
+  else if (input === Input.DOWN) moveVertical(1)
+}
 
-  const LEFT_KEY = 'ArrowLeft'
-  const UP_KEY = 'ArrowUp'
-  const RIGHT_KEY = 'ArrowRight'
-  const DOWN_KEY = 'ArrowDown'
-  function shouldGoLeft(e: KeyboardEvent) {
-    return e.code === LEFT_KEY || e.key === 'a'
-  }
-  function shouldGoUp(e: KeyboardEvent) {
-    return e.code === UP_KEY || e.key === 'w'
-  }
-  function shouldGoRight(e: KeyboardEvent) {
-    return e.code === RIGHT_KEY || e.key === 'd'
-  }
-  function shouldGoDown(e: KeyboardEvent) {
-    return e.code === DOWN_KEY || e.key === 's'
-  }
+function move(e: KeyboardEvent): void {
+  if (shouldGoLeft(e)) inputs.push(Input.LEFT)
+  else if (shouldGoUp(e)) inputs.push(Input.UP)
+  else if (shouldGoRight(e)) inputs.push(Input.RIGHT)
+  else if (shouldGoDown(e)) inputs.push(Input.DOWN)
+}
+
+const LEFT_KEY = 'ArrowLeft'
+const UP_KEY = 'ArrowUp'
+const RIGHT_KEY = 'ArrowRight'
+const DOWN_KEY = 'ArrowDown'
+
+function shouldGoLeft(e: KeyboardEvent): boolean {
+  return e.code === LEFT_KEY || e.key === 'a'
+}
+function shouldGoUp(e: KeyboardEvent): boolean {
+  return e.code === UP_KEY || e.key === 'w'
+}
+function shouldGoRight(e: KeyboardEvent): boolean {
+  return e.code === RIGHT_KEY || e.key === 'd'
+}
+function shouldGoDown(e: KeyboardEvent): boolean {
+  return e.code === DOWN_KEY || e.key === 's'
 }
 
 function draw() {
@@ -291,4 +297,21 @@ function gameLoop() {
 }
 window.onload = () => {
   gameLoop()
+}
+
+export {
+  handleInputs,
+  moveVertical,
+  moveHorizontal,
+  move,
+  Input,
+  inputs,
+  LEFT_KEY,
+  UP_KEY,
+  RIGHT_KEY,
+  DOWN_KEY,
+  shouldGoLeft,
+  shouldGoUp,
+  shouldGoDown,
+  shouldGoRight
 }

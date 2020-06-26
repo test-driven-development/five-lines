@@ -19,9 +19,9 @@
     "test:coverage": "npm test -- --coverage",
     "test:watch": "npm test -- --watchAll",
     "validate": "npm run format && npm run lint && npm run test:coverage"
-
   },
   "devDependencies": {
+    "@testing-library/dom": "^7.18.1",
     "@types/jest": "latest",
     "@types/jsdom": "latest",
     "@types/node": "latest",
